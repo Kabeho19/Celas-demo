@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Celas Rewards — Demo (SIMULATION)</title>
+<style>
+  :root{
+    --red:#e11d48; --black:#0b0b0b; --grey:#f5f6f8;
+    --card:#ffffff; --accent:#2563eb; --muted:#6b7280; --success:#10b981;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,System-ui,Arial,sans-serif;background:var(--grey);color:#0f172a;-webkit-font-smoothing:antialiased}
+  /* header */
+  header{background:var(--black);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;background:linear-gradient(135deg,#111827,#1f2937);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+  .brand-title{color:var(--red);font-weight:800;letter-spacing:.6px;font-size:18px}
+  .header-ad{background:#111;color:#cbd5e1;padding:6px 10px;border-radius:8px;font-size:13px}
+  /* layout */
+  .wrap{max-width:1200px;margin:18px auto;padding:12px}
+  .layout{display:flex;gap:18px}
+  .main{flex:1}
+  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(2,6,23,0.06);margin-bottom:14px}
+  .small{font-size:13px;color:var(--muted)}
+  .muted-small{color:#64748b;font-size:13px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  input,select,textarea,button{font-size:14px}
+  input[type=text],input[type=password],input[type=number],select{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
+  button.btn{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;box-shadow:0 6px 18px rgba(37,99,235,0.12)}
+  button.ghost{background:transparent;border:1px solid #e6e9ef;color:var(--muted);padding:9px;border-radius:8px}
+  /* wallet */
+  .wallet{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .wallet-balance{font-size:28px;font-weight:800}
+  .level{display:flex;flex-direction:column;gap:6px}
+  .level-bar{height:12px;background:#eef2f6;border-radius:999px;overflow:hidden;width:220px}
+  .level-fill{height:100%;background:linear-gradient(90deg,var(--accent),#06b6d4);width:34%}
+  .badges{display:flex;gap:8px;flex-wrap:wrap}
+  .badge-pill{background:#eef2ff;color:#3730a3;padding:6px 10px;border-radius:999px;font-weight:700}
+  /* wheel */
+  .wheel-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .wheel{width:360px;height:360px;border-radius:50%;position:relative;overflow:hidden;border:10px solid #fff;box-shadow:0 16px 40px rgba(2,6,23,0.12);
+    background: conic-gradient(#f97316 0 45deg,#f59e0b 45deg 90deg,#10b981 90deg 135deg,#06b6d4 135deg 180deg,#3b82f6 180deg 225deg,#8b5cf6 225deg 270deg,#ef4444 270deg 315deg,#fb7185 315deg 360deg);
+    transform:rotate(0deg);transition:transform 4s cubic-bezier(.17,.84,.44,1)}
+  .pointer{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid #111;z-index:10}
+  /* prize labels overlay */
+  .slice-labels{position:absolute;inset:0;pointer-events:none;display:block}
+  .slice-label{position:absolute;left:50%;top:8%;transform-origin:0 50%;font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.45)}
+  /* side / ads */
+  .side{width:320px;display:flex;flex-direction:column;gap:12px}
+  .ad-slot{background:#fff;border-radius:10px;padding:12px;border:1px dashed #e6e6e6;text-align:center;color:#444}
+  .footer-grey{background:#e6e7ea;padding:12px;border-radius:8px;margin-top:12px;text-align:center;color:#374151}
+  /* animations */
+  @keyframes pop { 0% { transform:scale(.95); } 50% { transform:scale(1.02);} 100%{transform:scale(1);} }
+  .btn:active{transform:translateY(1px)}
+  .logo{animation:pop 2.6s ease-in-out infinite}
+  /* responsive */
+  @media(max-width:980px){.layout{flex-direction:column}.side{width:100%}.wheel{width:300px;height:300px}}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:0 12px">
+    <div class="brand">
+      <div class="logo">CL</div>
+      <div>
+        <div class="brand-title">Celas Rewards</div>
+        <div class="small">Built by Blaise • Demo (SIMULATION)</div>
+      </div>
+    </div>
+    <div class="header-ad">Header Ad Placeholder</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+    <main class="main">
+      <!-- ACCOUNT -->
+      <div class="card" id="authCard">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>Account</strong>
+            <div class="small">Create a demo account stored in your browser. Tokens have no cash value.</div>
+          </div>
+          <div>
+            <button class="btn" id="showRegister">Register</button>
+            <button class="ghost" id="showLogin">Login</button>
+          </div>
+        </div>
+
+        <div id="registerForm" style="margin-top:12px;display:none">
+          <div class="controls">
+            <input id="regName" placeholder="Full name" />
+            <input id="regPhone" placeholder="Phone (078...)" />
+            <input id="regPass" type="password" placeholder="Password" />
+            <button class="btn" id="registerBtn">Create</button>
+          </div>
+        </div>
+
+        <div id="loginForm" style="margin-top:12px;display:none">
+          <div class="controls">
+            <input id="loginPhone" placeholder="Phone" />
+            <input id="loginPass" type="password" placeholder="Password" />
+            <button class="btn" id="loginBtn">Login</button>
+          </div>
+        </div>
+
+        <div id="accountInfo" style="margin-top:12px;display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div id="userName" style="font-weight:800">—</div>
+              <div class="muted-small" id="userPhone">—</div>
+            </div>
+            <div style="text-align:right">
+              <div class="muted-small">Celas</div>
+              <div class="wallet-balance" id="walletAmount">0</div>
+              <div style="margin-top:8px"><button class="btn" id="logoutBtn">Logout</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WALLET & EARN -->
+      <div class="card" id="walletCard" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>Wallet & Earn</strong>
+            <div class="small">Earn Celas by watching ads, daily check-in, or inviting friends (simulated).</div>
+          </div>
+          <div class="muted-small">Spin cost: <strong id="spinCostLabel">10 Celas</strong></div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+          <div>
+            <div class="muted-small">Balance</div>
+            <div class="wallet-balance" id="balanceMain">0</div>
+            <div class="muted-small">Level: <span id="userLevel">1</span></div>
+            <div class="level" style="margin-top:8px">
+              <div class="level-bar"><div class="level-fill" id="levelFill"></div></div>
+              <div class="badges" id="badgeArea"></div>
+            </div>
+          </div>
+
+          <div style="flex:1">
+            <div class="controls">
+              <button class="btn" id="watchAdBtn">Watch Ad — +5 Celas</button>
+              <button class="btn" id="dailyBtn">Daily Check-in — +10</button>
+              <button class="ghost" id="inviteBtn">Invite — +8 (sim)</button>
+              <button class="ghost" id="shopBtn">Rewards Shop</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPIN -->
+      <div class="card" id="spinCard" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>Spin Wheel</strong>
+            <div class="small">Spend Celas to spin — win virtual rewards, badges, or bonus Celas. No cash.</div>
+          </div>
+          <div class="muted-small">Ads: shown near wheel — monetise with sponsors</div>
+        </div>
+
+        <div class="wheel-wrap" style="margin-top:12px">
+          <div style="position:relative">
+            <div class="pointer"></div>
+            <div id="wheel" class="wheel">
+              <!-- slice labels positioned visually -->
+              <div class="slice-labels" aria-hidden="true">
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(0deg); top:8%; left:50%;">BIG +</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(45deg); top:20%; left:78%;">SMALL</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(90deg); top:50%; left:88%;">XP</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(135deg); top:78%; left:78%;">BONUS</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(180deg); top:92%; left:50%;">BIG +</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(225deg); top:78%; left:22%;">SMALL</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(270deg); top:50%; left:12%;">XP</div>
+                <div class="slice-label" style="transform:translate(-50%, -50%) rotate(315deg); top:20%; left:22%;">LOSE</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:360px">
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <button class="btn" id="spinBtn">Spin Now</button>
+              <button class="ghost" id="quickSpin">Quick Spin</button>
+              <button class="ghost" id="claimBadgeBtn">Claim Badge</button>
+            </div>
+            <div class="muted-small">Last: <span id="lastResult">—</span></div>
+
+            <div style="margin-top:12px" class="footer-grey">
+              <div class="small">Demo payout preview and badge progress shown here.</div>
+              <div id="payoutPreview" style="font-weight:700;font-size:18px;margin-top:6px">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="card" id="historyCard" style="display:none">
+        <strong>History</strong>
+        <div class="small">Activity stored locally in this browser (earn & spin history).</div>
+        <table style="width:100%;border-collapse:collapse;margin-top:8px">
+          <thead><tr style="text-align:left;color:#64748b;font-size:13px"><th>Time</th><th>Type</th><th>Amount</th><th>Note</th></tr></thead>
+          <tbody id="historyBody"><tr><td colspan="4" style="color:#64748b">No activity yet</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- REWARDS SHOP -->
+      <div class="card" id="shopCard" style="display:none">
+        <strong>Rewards Shop</strong>
+        <div class="small">Virtual items or vouchers (demo only).</div>
+        <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+          <div style="width:220px" class="card">
+            <div style="font-weight:700">Profile Badge</div><div class="small">50 Celas</div>
+            <div style="margin-top:8px"><button class="btn buy" data-cost="50" data-item="Profile Badge">Buy</button></div>
+          </div>
+          <div style="width:220px" class="card">
+            <div style="font-weight:700">5 Bonus Spins</div><div class="small">100 Celas</div>
+            <div style="margin-top:8px"><button class="btn buy" data-cost="100" data-item="5 Bonus Spins">Buy</button></div>
+          </div>
+          <div style="width:220px" class="card">
+            <div style="font-weight:700">10% Discount Voucher</div><div class="small">200 Celas</div>
+            <div style="margin-top:8px"><button class="btn buy" data-cost="200" data-item="10% Voucher">Buy</button></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <aside class="side">
+      <div class="card ad-slot">
+        <div style="font-weight:700">Live Wallet</div>
+        <div class="muted-small">Balance: <strong id="sideBalance">0</strong> Celas</div>
+        <div class="muted-small">Level: <strong id="sideLevel">1</strong></div>
+        <div style="margin-top:8px"><button class="btn" id="openProfile">Profile</button></div>
+      </div>
+
+      <div class="card ad-slot">
+        <div style="font-weight:700">Sponsor / Ad</div>
+        <div class="muted-small">Place sponsor banner or network ad here. Keep visible for better CPM.</div>
+      </div>
+
+      <div class="card ad-slot">
+        <div style="font-weight:700">Admin (Demo)</div>
+        <div class="muted-small">Open admin to grant tokens, export CSV or reset demo.</div>
+        <div style="margin-top:8px"><button class="ghost" id="toggleAdmin">Toggle Admin</button></div>
+      </div>
+
+      <div id="adminPanel" class="card" style="display:none;background:#fff7ed;border:1px dashed #f1c2a0">
+        <strong>Admin Panel (Demo)</strong>
+        <div style="margin-top:8px">
+          <input id="adminPhone" placeholder="User phone" style="margin-bottom:6px"/><br/>
+          <input id="adminAmount" type="number" placeholder="Amount" style="margin-bottom:6px"/><br/>
+          <button class="btn" id="grantBtn">Grant</button>
+          <button class="ghost" id="exportTxBtn">Export CSV</button>
+          <button class="ghost" id="resetAllBtn">Reset All</button>
+        </div>
+        <textarea id="adminLogs" style="width:100%;height:120px;margin-top:8px;border-radius:8px;padding:8px;border:1px solid #eee;font-family:monospace"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <div style="max-width:1200px;margin:8px auto">
+    <div class="footer-grey">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>SIMULATION / DEMO — NO REAL MONEY</strong> • Celas tokens are virtual.</div>
+        <div class="muted-small">Footer Ad Placeholder</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Improved Celas demo JS (client-only) */
+/* Minimal duplication: uses localStorage; same logic as earlier demo but tightened for this file */
+const CONFIG = { SPIN_COST:10, AD_REWARD:5, DAILY:10, INVITE:8, LEVEL_XP:[0,50,150,350,700] };
+const LS_USERS='celas_users', LS_CUR='celas_current', LS_TX='celas_txs';
+const now=()=>new Date().toLocaleString(), genId=()=> 'u'+Math.random().toString(36).slice(2,9);
+function loadUsers(){ return JSON.parse(localStorage.getItem(LS_USERS)||'{}'); }
+function saveUsers(u){ localStorage.setItem(LS_USERS, JSON.stringify(u)); }
+function loadTxs(){ return JSON.parse(localStorage.getItem(LS_TX)||'[]'); }
+function saveTxs(t){ localStorage.setItem(LS_TX, JSON.stringify(t)); updateAdminLogs(); }
+function setCurrent(phone){ localStorage.setItem(LS_CUR, phone); }
+function getCurrent(){ return localStorage.getItem(LS_CUR); }
+function pushTx(tx){ const txs=loadTxs(); txs.unshift(tx); saveTxs(txs); }
+function updateAdminLogs(){ const txs = loadTxs(); document.getElementById('adminLogs').value = txs.slice(0,300).map(t=>JSON.stringify(t)).join('\\n'); }
+
+/* UI helpers */
+function show(el){ el.style.display='block'; }
+function hide(el){ el.style.display='none'; }
+
+/* Register/Login */
+document.getElementById('showRegister').onclick = ()=> { show(document.getElementById('registerForm')); hide(document.getElementById('loginForm')); };
+document.getElementById('showLogin').onclick = ()=> { show(document.getElementById('loginForm')); hide(document.getElementById('registerForm')); };
+document.getElementById('registerBtn').onclick = ()=>{
+  const name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), pass=document.getElementById('regPass').value;
+  if(!name||!phone||!pass) return alert('Fill all fields');
+  const users=loadUsers(); if(users[phone]) return alert('Phone exists');
+  users[phone]={id:genId(),name,phone,pass,balance:0,xp:0,level:1,badges:[],history:[]};
+  saveUsers(users); alert('Account created — please login'); hide(document.getElementById('registerForm'));
+};
+document.getElementById('loginBtn').onclick = ()=>{
+  const phone=document.getElementById('loginPhone').value.trim(), pass=document.getElementById('loginPass').value;
+  const users=loadUsers(); if(!users[phone]||users[phone].pass!==pass) return alert('Invalid (demo)');
+  setCurrent(phone); initForUser();
+};
+
+/* Logout */
+document.getElementById('logoutBtn').onclick = ()=> { if(!confirm('Logout?')) return; localStorage.removeItem(LS_CUR); location.reload(); };
+
+/* Init UI for user */
+function initForUser(){
+  const phone=getCurrent(); if(!phone) return;
+  const users=loadUsers(), u=users[phone];
+  document.getElementById('accountInfo').style.display='block';
+  document.getElementById('authCard').querySelectorAll('#registerForm,#loginForm').forEach(el=>el.style.display='none');
+  document.getElementById('userName').textContent=u.name; document.getElementById('userPhone').textContent=u.phone;
+  document.getElementById('walletCard').style.display='block'; document.getElementById('spinCard').style.display='block';
+  document.getElementById('historyCard').style.display='block';
+  updateBalanceUI(); renderHistory(); updateLevelUI();
+}
+
+/* Update balance */
+function updateBalanceUI(){
+  const p=getCurrent(); if(!p) return;
+  const u=loadUsers()[p];
+  document.getElementById('walletAmount').textContent=u.balance; document.getElementById('balanceMain').textContent=u.balance;
+  document.getElementById('sideBalance').textContent=u.balance;
+}
+
+/* Earn actions */
+document.getElementById('watchAdBtn').onclick = ()=>{
+  const btn=document.getElementById('watchAdBtn'); btn.disabled=true; btn.textContent='Watching...';
+  setTimeout(()=>{ btn.disabled=false; btn.textContent='Watch Ad — +5 Celas'; credit( CONFIG.AD_REWARD,'AD_REWARD','Watched ad'); },2200);
+};
+document.getElementById('dailyBtn').onclick = ()=>{
+  const phone=getCurrent(); if(!phone) return alert('Login first');
+  const key='daily_'+phone+'_'+new Date().toISOString().slice(0,10); if(localStorage.getItem(key)) return alert('Daily claimed');
+  localStorage.setItem(key,'1'); credit(CONFIG.DAILY,'DAILY','Daily check-in');
+};
+document.getElementById('inviteBtn').onclick = ()=> credit(CONFIG.INVITE,'INVITE','Invite (sim)');
+
+/* Shop buy */
+document.querySelectorAll('.buy').forEach(b=> b.onclick = ()=>{
+  const cost=Number(b.dataset.cost), item=b.dataset.item;
+  const phone=getCurrent(); if(!phone) return alert('Login first');
+  const users=loadUsers(), u=users[phone]; if(u.balance < cost) return alert('Not enough Celas');
+  u.balance -= cost; u.history.unshift({time:now(),type:'SHOP',amount:-cost,note:item}); saveUsers(users);
+  pushTx({time:now(),type:'SHOP',method:'shop',amount:-cost,balance:u.balance,note:item}); updateBalanceUI(); renderHistory();
+  alert('Bought: ' + item);
+});
+
+/* credit helper */
+function credit(amount,type,note=''){
+  const phone=getCurrent(); if(!phone) return alert('Login first');
+  const users=loadUsers(), u=users[phone];
+  u.balance = (u.balance||0) + Number(amount); u.xp = (u.xp||0) + Math.max(1,Math.floor(amount/2)); u.history.unshift({time:now(),type,amount,note});
+  saveUsers(users); pushTx({time:now(),type,method:'internal',amount, balance:u.balance, note}); updateBalanceUI(); renderHistory(); updateLevelUI();
+}
+
+/* spin logic */
+const wheelEl=document.getElementById('wheel');
+function spinAnim(final, cb){ wheelEl.style.transition='transform 4s cubic-bezier(.17,.84,.44,1)'; wheelEl.style.transform='rotate('+final+'deg)'; setTimeout(cb,4200); }
+function spinOnce(force=false){
+  const phone=getCurrent(); if(!phone) return alert('Login first');
+  const users=loadUsers(), u=users[phone];
+  if(u.balance < CONFIG.SPIN_COST) return alert('Not enough Celas');
+  u.balance -= CONFIG.SPIN_COST; saveUsers(users); updateBalanceUI();
+  const rand=Math.random()*360, extra=360*(3+Math.floor(Math.random()*3)); let final=extra+rand;
+  if(force) final = extra + 22;
+  spinAnim(final, ()=>{
+    const angle = (360 - (final % 360)) % 360; const seg=Math.floor(angle/45);
+    if(seg===0||seg===4){ // big win
+      const dynamic = Math.max(8, Math.floor(u.xp*0.2));
+      const payout = dynamic;
+      u.balance += payout; u.history.unshift({time:now(),type:'WIN',amount:payout,note:'Big spin win'}); pushTx({time:now(),type:'WIN',method:'spin',amount:payout,balance:u.balance,note:'Big win'});
+      if(Math.random()<0.25 && !u.badges.includes('Lucky Spinner')){ u.badges.push('Lucky Spinner'); pushTx({time:now(),type:'BADGE',method:'system',amount:0,balance:u.balance,note:'Lucky Spinner'}); }
+      document.getElementById('lastResult').textContent = 'BIG WIN +'+payout+' Celas';
+    } else if(seg===1||seg===5){
+      const payout=3; u.balance+=payout; u.history.unshift({time:now(),type:'WIN',amount:payout,note:'Small win'}); pushTx({time:now(),type:'WIN',method:'spin',amount:payout,balance:u.balance,note:'Small win'}); document.getElementById('lastResult').textContent='Small +'+payout;
+    } else {
+      u.history.unshift({time:now(),type:'SPIN',amount:-CONFIG.SPIN_COST,note:'Spin cost'}); pushTx({time:now(),type:'SPIN',method:'spin',amount:-CONFIG.SPIN_COST,balance:u.balance,note:'Spin'}); document.getElementById('lastResult').textContent='No reward';
+    }
+    saveUsers(users); updateBalanceUI(); renderHistory(); updateLevelUI();
+  });
+}
+document.getElementById('spinBtn').onclick = ()=> spinOnce(false);
+document.getElementById('quickSpin').onclick = ()=> {
+  const phone=getCurrent(); if(!phone) return alert('Login first');
+  const users=loadUsers(), u=users[phone];
+  if(u.balance < CONFIG.SPIN_COST) return alert('Not enough Celas');
+  u.balance -= CONFIG.SPIN_COST; saveUsers(users); updateBalanceUI();
+  const angle=Math.floor(Math.random()*360), final=360*2 + angle;
+  wheelEl.style.transition='transform .9s ease-out'; wheelEl.style.transform='rotate('+final+'deg)';
+  setTimeout(()=>{
+    const seg=Math.floor(((360 - (final%360))%360)/45);
+    if(seg===0||seg===4){ const payout=Math.max(5,Math.floor(u.xp*0.2)); u.balance+=payout; u.history.unshift({time:now(),type:'WIN',amount:payout,note:'Quick win'}); pushTx({time:now(),type:'WIN',method:'spin',amount:payout,balance:u.balance,note:'Quick win'}); document.getElementById('lastResult').textContent='Win +'+payout;}
+    else { u.history.unshift({time:now(),type:'SPIN',amount:-CONFIG.SPIN_COST,note:'Quick spin'}); pushTx({time:now(),type:'SPIN',method:'spin',amount:-CONFIG.SPIN_COST,balance:u.balance,note:'Quick spin'}); document.getElementById('lastResult').textContent='Lose'; }
+    saveUsers(users); updateBalanceUI(); renderHistory(); updateLevelUI();
+  },1100);
+};
+
+/* history */
+function renderHistory(){
+  const phone=getCurrent(); if(!phone) return;
+  const u=loadUsers()[phone]; const tbody=document.getElementById('historyBody'); tbody.innerHTML='';
+  if(!u.history || !u.history.length){ tbody.innerHTML='<tr><td colspan="4" style="color:#64748b">No activity yet</td></tr>'; return; }
+  u.history.slice(0,50).forEach(h=>{
+    const tr=document.createElement('tr'); tr.innerHTML='<td>'+h.time+'</td><td>'+h.type+'</td><td>'+h.amount+'</td><td>'+ (h.note||'') +'</td>'; tbody.appendChild(tr);
+  });
+}
+
+/* levels */
+function updateLevelUI(){
+  const phone=getCurrent(); if(!phone) return;
+  const users=loadUsers(), u=users[phone];
+  let lvl=1; for(let i=0;i<CONFIG.LEVEL_XP.length;i++) if(u.xp>=CONFIG.LEVEL_XP[i]) lvl=i+1;
+  u.level=lvl; saveUsers(users);
+  document.getElementById('userLevel').textContent=u.level; document.getElementById('sideLevel').textContent=u.level;
+  const next=CONFIG.LEVEL_XP[u.level] || (CONFIG.LEVEL_XP[CONFIG.LEVEL_XP.length-1] + 300*(u.level-CONFIG.LEVEL_XP.length+1));
+  const prev=CONFIG.LEVEL_XP[u.level-1]||0; const pct=Math.min(100,Math.max(0,Math.floor((u.xp-prev)/(next-prev)*100||0)));
+  document.getElementById('levelFill').style.width = pct + '%';
+  // badges
+  const ba = document.getElementById('badgeArea'); ba.innerHTML=''; (u.badges||[]).forEach(b=>{ const el=document.createElement('span'); el.className='badge-pill'; el.textContent=b; ba.appendChild(el); });
+}
+
+/* admin actions */
+document.getElementById('toggleAdmin').onclick = ()=> { const p=document.getElementById('adminPanel'); p.style.display = (p.style.display==='block'?'none':'block'); updateAdminLogs(); };
+document.getElementById('grantBtn').onclick = ()=>{
+  const phone=document.getElementById('adminPhone').value.trim(); const amt=Number(document.getElementById('adminAmount').value)||0;
+  if(!phone||!amt) return alert('Enter phone & amount'); const users=loadUsers(); if(!users[phone]) return alert('Not found');
+  users[phone].balance = (users[phone].balance||0) + amt; users[phone].history.unshift({time:now(),type:'ADMIN',amount:amt,note:'Grant'}); saveUsers(users);
+  pushTx({time:now(),type:'ADMIN',method:'admin',amount:amt,balance:users[phone].balance,note:'Grant'}); updateBalanceUI(); renderHistory(); alert('Granted');
+};
+document.getElementById('exportTxBtn').onclick = ()=>{
+  const txs=loadTxs(); if(!txs.length) return alert('No txs'); const csv=['time,type,method,amount,balance,note'].concat(txs.map(t=>[t.time,t.type,t.method,t.amount,t.balance,('"'+(t.note||'')+'"')].join(','))).join('\\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='celas_txs.csv'; a.click(); URL.revokeObjectURL(url);
+};
+document.getElementById('resetAllBtn').onclick = ()=> { if(!confirm('Reset demo?')) return; localStorage.removeItem(LS_USERS); localStorage.removeItem(LS_TX); localStorage.removeItem(LS_CUR); location.reload(); };
+
+/* init on load */
+window.addEventListener('load', ()=>{
+  const cur=getCurrent(); if(cur) initForUser(); updateAdminLogs();
+});
+
+/* small helpers to avoid missing functions */
+function pushTx(tx){ const txs=loadTxs(); txs.unshift(tx); saveTxs(txs); updateAdminLogs(); }
+function saveTxs(t){ localStorage.setItem(LS_TX, JSON.stringify(t)); updateAdminLogs(); }
+function loadTxs(){ return JSON.parse(localStorage.getItem(LS_TX)||'[]'); }
+function updateAdminLogs(){ const t=loadTxs(); document.getElementById('adminLogs').value = t.slice(0,300).map(x=>JSON.stringify(x)).join('\\n'); }
+</script>
+</body>
+</html>
